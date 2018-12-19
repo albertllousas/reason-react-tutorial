@@ -8,12 +8,10 @@ Building a reason-react project from scratch.
     2. [Setup reason-react](#setup-reason-react)
     3. [Adding react code](#adding-react-code)
     4. [Web bundling](#web-bundling)
+2. [Coding time](#coding-time)
 
-
-
-## Setup building
-
-### Init project and tools
+# Setup project
+## Init project and tools
 
 ```bash
 mkdir fun-with-reason-react
@@ -56,7 +54,7 @@ node src/Demo.bs.js
 Hello, BuckleScript and Reason!
 ```
 
-### Setup reason-react
+## Setup reason-react
 
 Now we have to add react, in theory if we create a project from scratch with `bsb` and `-theme react` it would generate all the templating, but since we want to understand what we are doing let's do it manually.
 
@@ -72,7 +70,7 @@ We should also change buckle script `bsconfig.json` to enable react builds addin
 "bs-dependencies": ["reason-react"],
 ```
 
-### Adding react code
+## Adding react code
 
 Now we should be able to add and compile some reason react code.
 
@@ -120,7 +118,7 @@ Sadly, we won't see anything because now we are just exposing a bs file but what
 - Adding all the required scripts to the html (old way)
 - Bundling all the dependecencies in one single js file (modern way)
 
-### Web bundling
+## Web bundling
 
 Bundling is the process to combines multiple files into a single file, besides that, optimization processes will be applied as well.
 
@@ -153,5 +151,7 @@ Or prepare the bundle for production:
 ```bash
 npm run bundle
 ```
+
+# Coding time
 
 
