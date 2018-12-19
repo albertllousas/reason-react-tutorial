@@ -80,7 +80,7 @@ We will create a simple stateless react component in reason `HelloWorldReact.re`
 ```reasonml
 let component = ReasonReact.statelessComponent("HelloWorldReact");
 
-let make = () => {
+let make = (_) => {
   ...component, /* spread the template's other defaults into here  */
   render: _self => <div> HelloWorld </div>
 };
