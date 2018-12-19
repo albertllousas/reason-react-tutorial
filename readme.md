@@ -1,6 +1,6 @@
 # reason react - tutorial
 
-Building a reason-react project from scratch.
+The idea of this project is not to use a prebuild-template, instead what we want is to build a reason-react project from scratch, so we will be aware of all the steps that should be done in terms of building, coding, design patterns and running.
 
 # Table of Contents
 1. [Setup project](#setup-building)
@@ -11,6 +11,7 @@ Building a reason-react project from scratch.
 2. [Coding time](#coding-time)
 
 # Setup project
+
 ## Init project and tools
 
 ```bash
