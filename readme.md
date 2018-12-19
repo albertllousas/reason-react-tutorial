@@ -91,8 +91,7 @@ We should render it into the dom `Index.re`:
 ReactDOMRe.renderToElementWithId(<HelloWorldReact />, "index");
 ```
 
-And create a simple html to visualize it:
-`index.html`:
+And create a simple html to visualize it `index.html`:
 ```html
 <!DOCTYPE html>
 <html lang="en">
