@@ -1,1 +1,1 @@
-ReactDOMRe.renderToElementWithId(<RandomRemoteDog />, "index");
+ReactDOMRe.renderToElementWithId(<RandomJoke />, "index");

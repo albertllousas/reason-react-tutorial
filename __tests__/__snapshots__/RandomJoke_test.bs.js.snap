@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<RandomJoke /> snapshot while loading 1`] = `
+<div>
+  loading ...
+</div>
+`;
+
+exports[`<RandomJoke /> snapshot while loading changing the default message 1`] = `
+<div>
+  Wait for the dog ...
+</div>
+`;

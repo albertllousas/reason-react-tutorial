@@ -4,7 +4,7 @@ type state = {
 
 type action = Fetching;
 
-let component = ReasonReact.reducerComponent("RandomRemoteDog");
+let component = ReasonReact.reducerComponent("RandomJoke");
 
 let make = (~loadingMessage="loading ...", _children) => {
   ...component,

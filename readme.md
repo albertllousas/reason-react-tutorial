@@ -12,7 +12,7 @@ The idea of this project is not to use a prebuild-template, instead what we want
     4. [Web bundling](#web-bundling)
 2. [Coding time](#coding-time)
     1. [Add testing dependencies](#add-testing-dependencies)
-    2. [First iteration : show a photo of a random dog](#first-iteration-show-a-photo-of-a-random-dog)
+    2. [First iteration : show a photo of a random joke](#first-iteration-show-a-photo-of-a-random-joke)
         1. [Writing our first test](#writing-our-first-test)
         2. [Showing loader](#showing-loader)
 
@@ -162,9 +162,9 @@ npm run bundle
 
 Let's create an small real app that consumes a public api:
 
-- We will use https://dog.ceo/dog-api/
-- MVP, first iteration: We show a photo of a random dog.
-- Second iteration: We will show a photo of random dog given a category.
+- We will use https://icanhazdadjoke.com/api
+- MVP, first iteration: We show a random joke.
+- Second iteration: We will refresh the random joke with a button.
 
 ## Add testing dependencies
 
@@ -212,29 +212,29 @@ describe "Expect" (fun () ->
 );
 ```
 
-## First iteration : show a photo of a random dog
+## First iteration : show a random joke
 
 ### Writing our first test
-Now, we can do some TDD and write our first test `__tests__/RandomRemotedog_test.re`:
+Now, we can do some TDD and write our first test `__tests__/RandomJoke_test.re`:
 
 ```ocaml
 
 open Jest;
 
-describe("<RandomRemoteDog />", () => {
+describe("<RandomJoke />", () => {
   open ExpectJs;
 
   test("render", () => {
-    let component = ReactShallowRenderer.renderWithRenderer(<RandomRemoteDog />);
+    let component = ReactShallowRenderer.renderWithRenderer(<RandomJoke />);
     expect(Js.Undefined.return(component)) |> toBeDefined;
   });
 });
 ```
 
-We should create the component `src/RandomRemoteDog.re`:
+We should create the component `src/RandomJoke.re`:
 
 ```ocaml
-let component = ReasonReact.statelessComponent("RandomRemoteDog");
+let component = ReasonReact.statelessComponent("RandomJoke");
 
 let make = (_) => {
   ...component,
@@ -244,14 +244,14 @@ let make = (_) => {
 
 Some notes:
 - In OCaml/Reason all functions should be wrap into a modules `module MyModule = {...}`, but by default files are map to a module, so we don't need code it.
-- In ReasonReact, instead of passing the whole "class" ReasonReact.createElement function, you'd instead declare a make function, it will be desugared to something like `ReasonReact.element(RandomRemoteDog.make(...))`
+- In ReasonReact, instead of passing the whole "class" ReasonReact.createElement function, you'd instead declare a make function, it will be desugared to something like `ReasonReact.element(RandomJoke.make(...))`
 
 And run the test:
 
 ```bash
 npm test
- PASS  __tests__/RandomRemoteDog_test.bs.js
-  <RandomRemoteDog />
+ PASS  __tests__/RandomJoke_test.bs.js
+  <RandomJoke />
     ✓ render (5ms)
 
 Test Suites: 1 passed, 1 total
@@ -264,17 +264,17 @@ Great! Now we are ready to add some production code!
 
 ### Showing loader
 
-Since we want to show a remote dog, our second step should be to see a loading screen while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomRemotedog_test.re`:
+Since we want to show a remote joke, our second step should be to see a loading screen while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomJoke_test.re`:
 
 ```ocaml
 ...
  test("snapshot while loading", () => {
-    let component = ReactShallowRenderer.renderWithRenderer(<RandomRemoteDog />);
+    let component = ReactShallowRenderer.renderWithRenderer(<RandomJoke />);
     expect(Js.Undefined.return(component)) |> toMatchSnapshot;
   });
 
   test("snapshot while loading changing the default message", () => {
-    let component = ReactShallowRenderer.renderWithRenderer(<RandomRemoteDog loadingMessage="Wait for the dog ..."/>);
+    let component = ReactShallowRenderer.renderWithRenderer(<RandomJoke loadingMessage="Wait for the joke ..."/>);
     expect(Js.Undefined.return(component)) |> toMatchSnapshot;
   });
 ```
@@ -289,7 +289,7 @@ type state = {
 
 type action = Fetching;
 
-let component = ReasonReact.reducerComponent("RandomRemoteDog");
+let component = ReasonReact.reducerComponent("RandomJoke");
 
 let make = (~loadingMessage="loading ...", _children) => {
   ...component,
