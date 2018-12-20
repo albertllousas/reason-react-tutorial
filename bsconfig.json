@@ -19,7 +19,7 @@
   },
   "suffix": ".bs.js",
   "reason": {"react-jsx": 2},
-  "bs-dependencies": ["reason-react", "@glennsl/bs-jest"],
+  "bs-dependencies": ["reason-react", "@glennsl/bs-jest", "bs-enzyme", "bs-react-test-renderer"],
   "warnings": {
     "error" : "+101"
   },

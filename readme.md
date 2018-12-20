@@ -2,6 +2,8 @@
 
 The idea of this project is not to use a prebuild-template, instead what we want is to build a reason-react project from scratch, so we will be aware of all the steps that should be done in terms of building, coding, design patterns and running.
 
+:construction: **Note:** Reason react, tool chain and testing tools are in an early stage an most of them are still experimental, so we should expect main changes and possibly this tutorial will become updated.
+
 # Table of Contents
 1. [Setup project](#setup-building)
     1. [Init project and tools](#init-reason-project-and-tool-chain)
@@ -9,6 +11,10 @@ The idea of this project is not to use a prebuild-template, instead what we want
     3. [Adding react code](#adding-react-code)
     4. [Web bundling](#web-bundling)
 2. [Coding time](#coding-time)
+    1. [Add testing dependencies](#add-testing-dependencies)
+    2. [First iteration : show a photo of a random dog](#first-iteration-show-a-photo-of-a-random-dog)
+        1. [Writing our first test](#writing-our-first-test)
+        2. [Showing loader](#showing-loader)
 
 # Setup project
 
@@ -162,9 +168,20 @@ Let's create an small real app that consumes a public api:
 
 ## Add testing dependencies
 
-As a testing tool we want to use `jest`, but we should use the buckle-script bindings:
+As a testing tools we want to use `jest` `react-test-renderer` and `enzyme`, but we should use the buckle-script bindings:
 
-- Follow the instructions here [bs-jest](https://github.com/glennsl/bs-jest)
+```bash
+npm install --save-dev npm @glennsl/bs-jest bs-react-test-renderer bs-enzyme enzyme-adapter-react-16
+```
+
+Then add all the dependencies in your `bsconfig.json` as well:
+
+```json
+{
+  ...
+"bs-dependencies": ["reason-react", "@glennsl/bs-jest", "bs-enzyme", "bs-react-test-renderer"],
+}
+```
 
 Add an script runner in `package.json`:
 
@@ -179,7 +196,7 @@ Add an script runner in `package.json`:
 }
 ```
 
-Create a simple test `__tests__/expect_test.re`:
+Create a simple test `__tests__/expect_test.re`, just to see if it worked:
 
 ```ocaml
 open Jest
@@ -195,25 +212,99 @@ describe "Expect" (fun () ->
 );
 ```
 
-And run it:
+## First iteration : show a photo of a random dog
+
+### Writing our first test
+Now, we can do some TDD and write our first test `__tests__/RandomRemotedog_test.re`:
+
+```ocaml
+
+open Jest;
+
+describe("<RandomRemoteDog />", () => {
+  open ExpectJs;
+
+  test("render", () => {
+    let component = ReactShallowRenderer.renderWithRenderer(<RandomRemoteDog />);
+    expect(Js.Undefined.return(component)) |> toBeDefined;
+  });
+});
+```
+
+We should create the component `src/RandomRemoteDog.re`:
+
+```ocaml
+let component = ReasonReact.statelessComponent("RandomRemoteDog");
+
+let make = (_) => {
+  ...component,
+  render: _self => <div> {ReasonReact.string("todo")} </div>
+};
+```
+
+Some notes:
+- In OCaml/Reason all functions should be wrap into a modules `module MyModule = {...}`, but by default files are map to a module, so we don't need code it.
+- In ReasonReact, instead of passing the whole "class" ReasonReact.createElement function, you'd instead declare a make function, it will be desugared to something like `ReasonReact.element(RandomRemoteDog.make(...))`
+
+And run the test:
 
 ```bash
 npm test
-...
- PASS  __tests__/expect_test.bs.js
-  Expect
-    ✓ toBe (3ms)
+ PASS  __tests__/RandomRemoteDog_test.bs.js
+  <RandomRemoteDog />
+    ✓ render (5ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       1 passed, 1 total
 Snapshots:   0 total
-Time:        0.904s, estimated 1s
+Time:        0.97s, estimated 1s
 Ran all test suites.
 ```
+Great! Now we are ready to add some production code!
 
-## First iteration : show a photo of a random dog
+### Showing loader
 
-Now, we can 
+Since we want to show a remote dog, our second step should be to see a loading screen while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomRemotedog_test.re`:
+
+```ocaml
+...
+ test("snapshot while loading", () => {
+    let component = ReactShallowRenderer.renderWithRenderer(<RandomRemoteDog />);
+    expect(Js.Undefined.return(component)) |> toMatchSnapshot;
+  });
+
+  test("snapshot while loading changing the default message", () => {
+    let component = ReactShallowRenderer.renderWithRenderer(<RandomRemoteDog loadingMessage="Wait for the dog ..."/>);
+    expect(Js.Undefined.return(component)) |> toMatchSnapshot;
+  });
+```
+
+Note: Since ReasonML doesn't have the notion of null or undefined, we should wrap our component with `Js.Undefined.return`. [More info](https://reasonml.github.io/docs/en/null-undefined-option)
+
+And change the component: 
+```ocaml
+type state = {
+  loading: bool
+};
+
+type action = Fetching;
+
+let component = ReasonReact.reducerComponent("RandomRemoteDog");
+
+let make = (~loadingMessage="loading ...", _children) => {
+  ...component,
+  initialState: () => {loading: true},
+  reducer: (action, state) => switch (action) {
+    | Fetching => ReasonReact.Update({...state, loading: true})
+    },
+  render: self =>
+    <div>(self.state.loading ? ReasonReact.string(loadingMessage): ReasonReact.null)</div>
+};
+```
+Reason comes with "reducer" (like Redux) built in. So for small apps we can use it, for big apps there are some libraries like [reductive](https://github.com/reasonml-community/reductive).
+
+
+
 
 
 

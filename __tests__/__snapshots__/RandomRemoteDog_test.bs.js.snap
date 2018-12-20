@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<RandomRemoteDog /> snapshot while loading 1`] = `
+<div>
+  loading ...
+</div>
+`;
+
+exports[`<RandomRemoteDog /> snapshot while loading changinf the default message 1`] = `
+<div>
+  Wait for the dog ...
+</div>
+`;
+
+exports[`<RandomRemoteDog /> snapshot while loading changing the default message 1`] = `
+<div>
+  Wait for the dog ...
+</div>
+`;
