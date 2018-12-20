@@ -12,7 +12,7 @@ The idea of this project is not to use a prebuild-template, instead what we want
     4. [Web bundling](#web-bundling)
 2. [Coding time](#coding-time)
     1. [Add testing dependencies](#add-testing-dependencies)
-    2. [First iteration : show a photo of a random joke](#first-iteration-show-a-photo-of-a-random-joke)
+    2. [First iteration : show a remote random joke](#show-a-remote-random-joke)
         1. [Writing our first test](#writing-our-first-test)
         2. [Showing loader](#showing-loader)
 
@@ -212,7 +212,7 @@ describe "Expect" (fun () ->
 );
 ```
 
-## First iteration : show a random joke
+## First iteration :  show a remote random joke
 
 ### Writing our first test
 Now, we can do some TDD and write our first test `__tests__/RandomJoke_test.re`:
