@@ -33,7 +33,7 @@ Generate a simple project template
 
 This command should have generated a simple project scaffold with a simple file `src/Demo.re`:
 
-```reasonml
+```ocaml
 Js.log("Hello, BuckleScript and Reason!");
 ```
 
@@ -77,7 +77,7 @@ Now we should be able to add and compile some reason react code.
 
 We will create a simple stateless react component in reason `HelloWorldReact.re`:
 
-```reasonml
+```ocaml
 let component = ReasonReact.statelessComponent("HelloWorldReact");
 
 let make = (_) => {
@@ -87,7 +87,7 @@ let make = (_) => {
 
 ```
 We should render it into the dom `Index.re`:
-```reasonml
+```ocaml
 ReactDOMRe.renderToElementWithId(<HelloWorldReact />, "index");
 ```
 
