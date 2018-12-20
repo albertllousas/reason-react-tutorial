@@ -158,12 +158,12 @@ Or prepare the bundle for production:
 npm run bundle
 ```
 
-# Coding time
+# Coding time: Random Joke App
 
-Let's create an small real app that consumes a public api:
+Let's create an small real app that consumes a public api, our idea is simple, show a random joke:
 
-- We will use https://icanhazdadjoke.com/api
-- MVP, first iteration: We show a random joke.
+- We will use a real service to get a joke : https://icanhazdadjoke.com/api
+- First iteration: We will show a random joke.
 - Second iteration: We will refresh the random joke with a button.
 
 ## Add testing dependencies
@@ -262,9 +262,52 @@ Ran all test suites.
 ```
 Great! Now we are ready to add some production code!
 
-### Showing loader
+### Design the component
 
-Since we want to show a remote joke, our second step should be to see a loading screen while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomJoke_test.re`:
+Before start adding more tests, we could do some TDD inside-out, so we will think about the big picture and the possible solution instead using tests to drive us through the design process.
+
+If we think in our component, we could think about it as an state machine that stores the status of the component and can change it depending on the action it receives.
+
+<p align="center">
+  <img src="state-diagram.png">
+</p>
+
+So, we will have:
+
+States:
+- Loading
+- Show
+- Error
+
+Actions:
+- FetchJoke
+- JokeFetched
+- ErrorFetchingJoke
+
+Translated to some code:
+
+```ocaml
+type joke = string;
+
+type error = string;
+
+type state =
+  | Loading
+  | Show(list(joke))
+  | Error(error);
+
+type action =
+  | FetchJoke
+  | JokeFetched(list(joke))
+  | ErrorFetchingJoke(error);
+```
+ReasonML let us create [sum types](https://en.wikipedia.org/wiki/Algebraic_data_type) with pipe operator; they call them [variants](https://reasonml.github.io/docs/en/variant).
+
+### Initial state: Loading
+
+Since we want to show a remote joke, our first statec should will be `Loading` and what we want to see is loading message/screen while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomJoke_test.re`.
+
+First, as following TDD approach `red`, `green`, `refactor`, we should write some test an make it `RED`:
 
 ```ocaml
 ...
@@ -281,27 +324,59 @@ Since we want to show a remote joke, our second step should be to see a loading 
 
 Note: Since ReasonML doesn't have the notion of null or undefined, we should wrap our component with `Js.Undefined.return`. [More info](https://reasonml.github.io/docs/en/null-undefined-option)
 
-And change the component: 
+Second, think about how to make our tests pass and make them `GREEN`: 
 ```ocaml
-type state = {
-  loading: bool
-};
+let component = ReasonReact.statelessComponent("RandomJoke");
 
-type action = Fetching;
+let make = (~loadingMessage="loading ...", _children) => {
+  ...component,
+  render: _self => <div> (ReasonReact.string(loadingMessage)) </div>
+};
+```
+And finally, `REFACTOR` improving the existing implementation, in my personal opinion, a code that you could commit.
+
+```ocaml
+type joke = string;
+
+type error = string;
+
+type state =
+  | Loading
+  | Show(joke)
+  | Error(error);
+
+type action =
+  | FetchJoke
+  | JokeFetched(joke)
+  | ErrorFetchingJoke(error);
 
 let component = ReasonReact.reducerComponent("RandomJoke");
 
 let make = (~loadingMessage="loading ...", _children) => {
   ...component,
-  initialState: () => {loading: true},
-  reducer: (action, state) => switch (action) {
-    | Fetching => ReasonReact.Update({...state, loading: true})
+  initialState: () => Loading,
+  reducer: (action, state) => switch action {
+    | FetchJoke => ReasonReact.NoUpdate
+    | JokeFetched(joke) => ReasonReact.NoUpdate
+    | ErrorFetchingJoke(error) => ReasonReact.NoUpdate
     },
-  render: self =>
-    <div>(self.state.loading ? ReasonReact.string(loadingMessage): ReasonReact.null)</div>
+  render: self => switch (self.state) {
+  | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
+  | Show(joke) => <div> (ReasonReact.string("TODO")) </div>
+  | Error(error) => <div> (ReasonReact.string("TODO")) </div>
+  }
 };
 ```
-Reason comes with "reducer" (like Redux) built in. So for small apps we can use it, for big apps there are some libraries like [reductive](https://github.com/reasonml-community/reductive).
+Some comments:
+- `ReasonReact.reducerComponent` define a [stateful component](https://reasonml.github.io/reason-react/docs/en/state-actions-reducer) and it comes with "reducer" (like Redux) built in. So for small apps we can use it, for big apps there are some libraries like [reductive](https://github.com/reasonml-community/reductive).
+- If you are not familiar with the term reducers, they specify how the application's state changes in response to actions sent. Remember that actions only describe what happened, but don't describe how the application's state changes.
+- `(~loadingMessage="loading ...", _children)`: Props are just the labeled arguments that we specify with `~` and `_children` just should be specified always as last argument, adding `_` in order to skip warnings in compile time. 
+- `switch` reason as a cousin of OCaml (funtional language), provide us with a powerful mechanism called _pattern matching_, and we will use it as much as possible because **It is NOT a switch-case**
+
+
+
+
+todo extract to a statless component!
 
 
 
