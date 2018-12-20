@@ -272,8 +272,6 @@ If we think in our component, we could think about it as an state machine that s
   <img src="state-diagram.png">
 </p>
 
-So, we will have:
-
 States:
 - Loading
 - Show
@@ -355,15 +353,15 @@ let component = ReasonReact.reducerComponent("RandomJoke");
 let make = (~loadingMessage="loading ...", _children) => {
   ...component,
   initialState: () => Loading,
-  reducer: (action, state) => switch action {
+  reducer: (action, _state) => switch action {
     | FetchJoke => ReasonReact.NoUpdate
-    | JokeFetched(joke) => ReasonReact.NoUpdate
-    | ErrorFetchingJoke(error) => ReasonReact.NoUpdate
+    | JokeFetched(_joke) => ReasonReact.NoUpdate
+    | ErrorFetchingJoke(_error) => ReasonReact.NoUpdate
     },
-  render: self => switch (self.state) {
+  render: self => switch self.state {
   | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
-  | Show(joke) => <div> (ReasonReact.string("TODO")) </div>
-  | Error(error) => <div> (ReasonReact.string("TODO")) </div>
+  | Show(_joke) => <div> (ReasonReact.string("TODO")) </div>
+  | Error(_error) => <div> (ReasonReact.string("TODO")) </div>
   }
 };
 ```
@@ -372,6 +370,7 @@ Some comments:
 - If you are not familiar with the term reducers, they specify how the application's state changes in response to actions sent. Remember that actions only describe what happened, but don't describe how the application's state changes.
 - `(~loadingMessage="loading ...", _children)`: Props are just the labeled arguments that we specify with `~` and `_children` just should be specified always as last argument, adding `_` in order to skip warnings in compile time. 
 - `switch` reason as a cousin of OCaml (funtional language), provide us with a powerful mechanism called _pattern matching_, and we will use it as much as possible because **It is NOT a switch-case**
+- We have added all the states and actions to the code in order to skip all the compilation warnings that reason gives us about the pattern-matching exhaustiveness.
 
 
 

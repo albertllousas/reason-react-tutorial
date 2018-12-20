@@ -18,14 +18,14 @@ let component = ReasonReact.reducerComponent("RandomJoke");
 let make = (~loadingMessage="loading ...", _children) => {
   ...component,
   initialState: () => Loading,
-  reducer: (action, state) => switch action {
+  reducer: (action, _state) => switch action {
     | FetchJoke => ReasonReact.NoUpdate
-    | JokeFetched(joke) => ReasonReact.NoUpdate
-    | ErrorFetchingJoke(error) => ReasonReact.NoUpdate
+    | JokeFetched(_joke) => ReasonReact.NoUpdate
+    | ErrorFetchingJoke(_error) => ReasonReact.NoUpdate
     },
-  render: self => switch (self.state) {
+  render: self => switch self.state {
   | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
-  | Show(joke) => <div> (ReasonReact.string("TODO")) </div>
-  | Error(error) => <div> (ReasonReact.string("TODO")) </div>
+  | Show(_joke) => <div> (ReasonReact.string("TODO")) </div>
+  | Error(_error) => <div> (ReasonReact.string("TODO")) </div>
   }
 };
