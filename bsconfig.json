@@ -3,17 +3,23 @@
 {
   "name": "fun-with-reason-react",
   "version": "0.1.0",
-  "sources": {
-    "dir" : "src",
-    "subdirs" : true
-  },
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs" : true
+    },
+    {
+      "dir": "__tests__",
+      "type": "dev"
+    }
+  ],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
   "reason": {"react-jsx": 2},
-  "bs-dependencies": ["reason-react"],
+  "bs-dependencies": ["reason-react", "@glennsl/bs-jest"],
   "warnings": {
     "error" : "+101"
   },

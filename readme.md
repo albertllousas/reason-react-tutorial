@@ -154,4 +154,70 @@ npm run bundle
 
 # Coding time
 
+Let's create an small real app that consumes a public api:
+
+- We will use https://dog.ceo/dog-api/
+- MVP, first iteration: We show a photo of a random dog.
+- Second iteration: We will show a photo of random dog given a category.
+
+## Add testing dependencies
+
+As a testing tool we want to use `jest`, but we should use the buckle-script bindings:
+
+- Follow the instructions here [bs-jest](https://github.com/glennsl/bs-jest)
+
+Add an script runner in `package.json`:
+
+```json
+{
+  ...
+  "scripts": {
+   ...
+   "test": "npm run build && jest",
+   ...
+  }
+}
+```
+
+Create a simple test `__tests__/expect_test.re`:
+
+```ocaml
+open Jest
+
+let () =
+
+describe "Expect" (fun () -> 
+  let open Expect in
+
+  test "toBe" (fun () ->
+    expect (1 + 2) |> toBe 3);
+  )
+);
+```
+
+And run it:
+
+```bash
+npm test
+...
+ PASS  __tests__/expect_test.bs.js
+  Expect
+    ✓ toBe (3ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        0.904s, estimated 1s
+Ran all test suites.
+```
+
+## First iteration : show a photo of a random dog
+
+Now, we can 
+
+
+
+
+
+
 

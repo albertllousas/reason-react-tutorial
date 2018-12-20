@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && jest",
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@glennsl/bs-jest": "^0.4.5",
     "bs-platform": "^4.0.14",
     "html-webpack-plugin": "^3.2.0",
     "parcel-bundler": "^1.11.0"
