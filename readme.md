@@ -291,12 +291,12 @@ type error = string;
 
 type state =
   | Loading
-  | Show(list(joke))
+  | Show(joke)
   | Error(error);
 
 type action =
   | FetchJoke
-  | JokeFetched(list(joke))
+  | JokeFetched(joke)
   | ErrorFetchingJoke(error);
 ```
 ReasonML let us create [sum types](https://en.wikipedia.org/wiki/Algebraic_data_type) with pipe operator; they call them [variants](https://reasonml.github.io/docs/en/variant).
@@ -308,15 +308,16 @@ Since we want to show a remote joke, our first statec should will be `Loading` a
 First, as following TDD approach `red`, `green`, `refactor`, we should write some test an make it `RED`:
 
 ```ocaml
-...
- test("snapshot while loading", () => {
-    let component = ReactShallowRenderer.renderWithRenderer(<RandomJoke />);
-    expect(Js.Undefined.return(component)) |> toMatchSnapshot;
+ open ReactTestRenderer;
+ ...
+  test("snapshot while loading", () => {
+    let json = toJSON(create(<RandomJoke />));
+    expect(json)  |> toMatchSnapshot;
   });
 
   test("snapshot while loading changing the default message", () => {
-    let component = ReactShallowRenderer.renderWithRenderer(<RandomJoke loadingMessage="Wait for the joke ..."/>);
-    expect(Js.Undefined.return(component)) |> toMatchSnapshot;
+    let component = toJSON(create(<RandomJoke loadingMessage="Wait for the joke ..."/>));
+    expect(component) |> toMatchSnapshot;
   });
 ```
 
@@ -359,9 +360,9 @@ let make = (~loadingMessage="loading ...", _children) => {
     | ErrorFetchingJoke(_error) => ReasonReact.NoUpdate
     },
   render: self => switch self.state {
-  | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
-  | Show(_joke) => <div> (ReasonReact.string("TODO")) </div>
-  | Error(_error) => <div> (ReasonReact.string("TODO")) </div>
+    | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
+    | Show(_joke) => <div> (ReasonReact.string("TODO")) </div>
+    | Error(_error) => <div> (ReasonReact.string("TODO")) </div>
   }
 };
 ```
@@ -369,13 +370,29 @@ Some comments:
 - `ReasonReact.reducerComponent` define a [stateful component](https://reasonml.github.io/reason-react/docs/en/state-actions-reducer) and it comes with "reducer" (like Redux) built in. So for small apps we can use it, for big apps there are some libraries like [reductive](https://github.com/reasonml-community/reductive).
 - If you are not familiar with the term reducers, they specify how the application's state changes in response to actions sent. Remember that actions only describe what happened, but don't describe how the application's state changes.
 - `(~loadingMessage="loading ...", _children)`: Props are just the labeled arguments that we specify with `~` and `_children` just should be specified always as last argument, adding `_` in order to skip warnings in compile time. 
-- `switch` reason as a cousin of OCaml (funtional language), provide us with a powerful mechanism called _pattern matching_, and we will use it as much as possible because **It is NOT a switch-case**
+- `switch` statement, reason as a cousin of OCaml (funtional language), provide us with a powerful mechanism called _pattern matching_, and we will use it as much as possible because **It is NOT a switch-case**
 - We have added all the states and actions to the code in order to skip all the compilation warnings that reason gives us about the pattern-matching exhaustiveness.
 
+### Fetching state
 
+The next step is interact with the external API, what would be need to do that?
 
+- An http client [bs-fetch](https://github.com/reasonml-community/bs-fetch)
+- A json encode/decoder [bs-json](https://github.com/glennsl/bs-json)
 
-todo extract to a statless component!
+Follow the instructions to install.
+
+decode and test
+
+# Run tests
+
+# Run app
+
+# Improvements
+
+todo extract to a statless component for a more complicated! 
+Presentational and Container Components
+pass functions down or write a render-prop/hoc fetching and generalize the component
 
 
 
