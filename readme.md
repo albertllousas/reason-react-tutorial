@@ -1,10 +1,19 @@
 # reason react - tutorial
 
-The idea of this project is not to use a prebuild-template, instead what we want is to build a reason-react project from scratch, so we will be aware of all the steps that should be done in terms of building, coding, design patterns and running.
-
 :construction: **Note:** Reason react, tool chain and testing tools are in an early stage an most of them are still experimental, so we should expect main changes and possibly this tutorial will become updated.
 
-# Table of Contents
+## Getting Started
+#### Installing
+`npm install`
+#### Building
+`npm bundle`
+#### Running the tests
+`npm test`
+#### Run app locally
+`npm serve`
+# Tutorial
+The idea of this project is to create a simple react app with reason but not using a prebuild-template, instead what we want is to build a project from scratch, so we will be aware of all the steps that should be done in terms of building, coding, dependencies, design patterns and running.
+
 1. [Setup project](#setup-building)
     1. [Init project and tools](#init-reason-project-and-tool-chain)
     2. [Setup reason-react](#setup-reason-react)
@@ -16,13 +25,15 @@ The idea of this project is not to use a prebuild-template, instead what we want
         1. [Writing our first test](#writing-our-first-test)
         2. [Showing loader](#showing-loader)
 
+
+
 # Setup project
 
 ## Init project and tools
 
 ```bash
-mkdir fun-with-reason-react
-cd fun-with-reason-react
+mkdir your_awesome_app_name
+cd your_awesome_app_name
 npm init
 ```
 
@@ -383,10 +394,6 @@ The next step is interact with the external API, what would be need to do that?
 Follow the instructions to install.
 
 decode and test
-
-# Run tests
-
-# Run app
 
 # Improvements
 

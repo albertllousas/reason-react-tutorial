@@ -8,8 +8,8 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
-    "serve": "parcel ./src/index.html",
-    "bundle": "parcel build ./src/index.html"
+    "serve": "npm run build && parcel ./src/index.html",
+    "bundle": "npm run build && parcel build ./src/index.html"
   },
   "author": "",
   "license": "ISC",
