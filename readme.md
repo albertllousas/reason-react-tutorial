@@ -30,6 +30,7 @@ __Assumption__: this is not a react tutorial, we will assume that the reader kno
     + [The reducer](#the-reducer)
     + [Rendering](#rendering)
     + [Important design note](#important-design-note)
+  * [Second iteration : refresh joke](#second-iteration)
 
 
 # Setup project
@@ -530,3 +531,7 @@ let make = (~loadingMessage="loading ...", ~fetch = fetchJoke, _children) => {
 1. Decouple behaviour and fetching from html generation in two diferent components using Presentational and Container Components
 2. If we want to reuse code across diferent components, use a render prop or HoC patterns to generalize fetching.
 3. If the application gets bigger and complex use another approach to handle a global state.
+
+### Second iteration
+
+TODO
