@@ -1,6 +1,6 @@
 # reason react - tutorial
 
-:construction: **Note:** Reason react, tool chain and testing tools are in an early stage an most of them are still experimental, so we should expect main changes and possibly this tutorial will become updated.
+:construction: **Note:** Reason react, tool chain and testing tools are in an early stage an most of them are still experimental, so we should expect main changes  or new libraries and possibly this tutorial will become updated.
 
 ## Getting Started
 #### Installing
@@ -12,19 +12,24 @@
 #### Run app locally
 `npm serve`
 # Tutorial
-The idea of this project is to create a simple react app with reason but not using a prebuild-template, instead what we want is to build a project from scratch, so we will be aware of all the steps that should be done in terms of building, coding, dependencies, design patterns and running.
+The idea of this project is to create a simple react app with reasonml but not using a prebuild-template, instead what we want is to build a project from scratch, so we will be aware of all the steps that should be done in terms of building, coding, dependencies or design patterns.
+__Assumption__: this is not a react tutorial, we will assume that the reader knows about how react works in terms of components lifecycle or virtual-dom.
 
-1. [Setup project](#setup-building)
-    1. [Init project and tools](#init-reason-project-and-tool-chain)
-    2. [Setup reason-react](#setup-reason-react)
-    3. [Adding react code](#adding-react-code)
-    4. [Web bundling](#web-bundling)
-2. [Coding time](#coding-time)
-    1. [Add testing dependencies](#add-testing-dependencies)
-    2. [First iteration : show a remote random joke](#show-a-remote-random-joke)
-        1. [Writing our first test](#writing-our-first-test)
-        2. [Showing loader](#showing-loader)
-
+- [Setup project](#setup-project)
+  * [Init project and tools](#init-project-and-tools)
+  * [Setup reason-react](#setup-reason-react)
+  * [Adding react code](#adding-react-code)
+  * [Web bundling](#web-bundling)
+- [Coding time: Random Joke App](#coding-time--random-joke-app)
+  * [Add testing dependencies](#add-testing-dependencies)
+  * [First iteration :  show a remote random joke](#first-iteration----show-a-remote-random-joke)
+    + [Writing our first test](#writing-our-first-test)
+    + [Design the component](#design-the-component)
+    + [Create a stateful component](#create-a-stateful-component)
+    + [Fetching data](#fetching-data)
+    + [The reducer](#the-reducer)
+    + [Rendering](#rendering)
+    + [Important design note](#important-design-note)
 
 
 # Setup project
@@ -207,22 +212,6 @@ Add an script runner in `package.json`:
 }
 ```
 
-Create a simple test `__tests__/expect_test.re`, just to see if it worked:
-
-```ocaml
-open Jest
-
-let () =
-
-describe "Expect" (fun () -> 
-  let open Expect in
-
-  test "toBe" (fun () ->
-    expect (1 + 2) |> toBe 3);
-  )
-);
-```
-
 ## First iteration :  show a remote random joke
 
 ### Writing our first test
@@ -312,9 +301,9 @@ type action =
 ```
 ReasonML let us create [sum types](https://en.wikipedia.org/wiki/Algebraic_data_type) with pipe operator; they call them [variants](https://reasonml.github.io/docs/en/variant).
 
-### Initial state: Loading
+### Create a stateful component
 
-Since we want to show a remote joke, our first statec should will be `Loading` and what we want to see is loading message/screen while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomJoke_test.re`.
+Since we want to show a remote joke, our first state should will be `Loading` and what we want to see is a loading message while we are fetching the data. To make it more interesting we will pass our loading message to the component `__tests__/RandomJoke_test.re`.
 
 First, as following TDD approach `red`, `green`, `refactor`, we should write some test an make it `RED`:
 
@@ -331,8 +320,6 @@ First, as following TDD approach `red`, `green`, `refactor`, we should write som
     expect(component) |> toMatchSnapshot;
   });
 ```
-
-Note: Since ReasonML doesn't have the notion of null or undefined, we should wrap our component with `Js.Undefined.return`. [More info](https://reasonml.github.io/docs/en/null-undefined-option)
 
 Second, think about how to make our tests pass and make them `GREEN`: 
 ```ocaml
@@ -365,11 +352,7 @@ let component = ReasonReact.reducerComponent("RandomJoke");
 let make = (~loadingMessage="loading ...", _children) => {
   ...component,
   initialState: () => Loading,
-  reducer: (action, _state) => switch action {
-    | FetchJoke => ReasonReact.NoUpdate
-    | JokeFetched(_joke) => ReasonReact.NoUpdate
-    | ErrorFetchingJoke(_error) => ReasonReact.NoUpdate
-    },
+  reducer: ((), _) => ReasonReact.NoUpdate,,
   render: self => switch self.state {
     | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
     | Show(_joke) => <div> (ReasonReact.string("TODO")) </div>
@@ -381,32 +364,169 @@ Some comments:
 - `ReasonReact.reducerComponent` define a [stateful component](https://reasonml.github.io/reason-react/docs/en/state-actions-reducer) and it comes with "reducer" (like Redux) built in. So for small apps we can use it, for big apps there are some libraries like [reductive](https://github.com/reasonml-community/reductive).
 - If you are not familiar with the term reducers, they specify how the application's state changes in response to actions sent. Remember that actions only describe what happened, but don't describe how the application's state changes.
 - `(~loadingMessage="loading ...", _children)`: Props are just the labeled arguments that we specify with `~` and `_children` just should be specified always as last argument, adding `_` in order to skip warnings in compile time. 
-- `switch` statement, reason as a cousin of OCaml (funtional language), provide us with a powerful mechanism called _pattern matching_, and we will use it as much as possible because **It is NOT a switch-case**
-- We have added all the states and actions to the code in order to skip all the compilation warnings that reason gives us about the pattern-matching exhaustiveness.
+- We have added all the states in render function to the code in order to skip all the compilation warnings that reason gives us about the pattern-matching exhaustiveness.
 
-### Fetching state
+### Fetching data
 
 The next step is interact with the external API, what would be need to do that?
 
-- An http client [bs-fetch](https://github.com/reasonml-community/bs-fetch)
 - A json encode/decoder [bs-json](https://github.com/glennsl/bs-json)
+- An http client [bs-fetch](https://github.com/reasonml-community/bs-fetch)
 
 Follow the instructions to install.
 
-decode and test
+_Note_: For now on, for the sake of the tutorial, we understand we are all doing TDD and we will skip the tests and just add the production code here, the tests are in `_tests_/`, take a look if you want.
 
-# Improvements
+Taking a look on the response that we get from the external API:
+```json
+{
+  "id": "R7UfaahVfFd",
+  "joke": "My dog used to chase people on a bike a lot. It got so bad I had to take his bike away.",
+  "status": 200
+}
+```
+Here we have our joke decoder, that parses the response to a single string joke:
+```ocaml
+type joke = string;
 
-todo extract to a statless component for a more complicated! 
-Presentational and Container Components
-pass functions down or write a render-prop/hoc fetching and generalize the component
+module Decode = {
+  let joke = json: joke => Json.Decode.(field("joke", string, json));
+};
+```
+Then, we have to create the function to call to the real API using `bs-fetch` http client:
+
+```bash
+open Js.Promise
+
+let fetchJoke = () =>
+    Fetch.fetchWithInit(
+      "https://icanhazdadjoke.com/",
+      Fetch.RequestInit.make(~headers=Fetch.HeadersInit.make({"Accept": "application/json"}),())
+      )
+    |> then_(Fetch.Response.json)
+    |> then_(json => json |> Decode.joke |> (joke => Some(joke) |> resolve))
+    |> catch(_error => resolve(None));
+```
+Notes about the code:
+- `open Js.Promise` opening the module let us to not use the prefixing for all the function calls like `then_`.
+- `Fetch.RequestInit.make( ... ,())`, the last argument is the unit () at the end, just to tell reasonml that if we don't provide all arguments we are not currying the function.
+- The operator `|>` is called reverse-application operator or pipe operator. It lets you chain function calls: x |> f is the same as f(x). It is useful to combine functions. 
+- The result type is `option`, that only accepts Some or None and we don't need to specify the return type because is inferred by the compiler. 
 
 
+### The reducer
 
+As we said before, [the reducer](https://reasonml.github.io/reason-react/docs/en/state-actions-reducer#actions-reducer) will be the one that centralizes all the component state updates.
 
+Checking the sourcecode, the `reducer` is just a function:
+ ```ocaml
+ ('action, 'state) => update('state, 'retainedProps, 'action)`
+ ```
+ Where `'` is the way to create generic types in reasonml and the result type `update` is also another generic type:
 
+ ```ocaml
+update('state, 'retainedProps, 'action) =
+  | NoUpdate
+  | Update('state)
+  | SideEffects(self('state, 'retainedProps, 'action) => unit)
+  | UpdateWithSideEffects(
+      'state,
+      self('state, 'retainedProps, 'action) => unit,
+    )
+ ```
 
+ So here we have the reducer function:
 
+ ```ocaml
+let createReducer = (fetch) => (action, _state) => switch action {
+  | FetchJoke => ReasonReact.UpdateWithSideEffects(Loading, 
+                 component => fetch() |> then_(result =>
+                        switch result {
+                          | Some(joke) => resolve(component.send(JokeFetched(joke)))
+                          | None => resolve(component.send(ErrorFetchingJoke))
+                        }
+                  )  |> ignore
+      )
+  | JokeFetched(joke) => ReasonReact.Update(Show(joke))
+  | ErrorFetchingJoke => ReasonReact.Update(Error("Error fetching a joke, try again ..."))
+  }
+ ```
+Behavior:
+1. This function will be called each time `self.send` with an action is called. Again, the infer system will fail if we try to call it with a type that doesn't match.
+2. As a result type the function will update the state trough any of the functions provided.
+3. If we have updated the state, under the hood the component will call setState(..) that will batch the changes and re-render the component.
 
+Comments:
+- We have curryfied the function to pass it the fetch function as a form of dependency injection, allowing us to create the real reducer.
+- `switch` statement, reason as a cousin of OCaml (funtional language), provide us with a powerful mechanism called _pattern matching_, and we will use it as much as possible because **It is NOT a switch-case**
+- The compiler will complain if we don't use the result type of a funtion, so we should use `|> ignore`.
+- Maybe it seems to be a dynamic language because we are not providing the argument types in the function `(action, _state) => ...`, but again here the system is intelligent enough to infer the types.
 
+### Rendering
 
+Finally the last step to complete the first iteration is enrich the render function and put all the code together:
+
+```ocaml
+open Js.Promise
+
+type joke = string;
+
+type error = string;
+
+type state =
+  | Loading
+  | Show(joke)
+  | Error(error);
+
+type action =
+  | FetchJoke
+  | JokeFetched(joke)
+  | ErrorFetchingJoke;
+
+module Decode = {
+  let joke = json: joke => Json.Decode.(field("joke", string, json));
+};
+
+let fetchJoke = () =>
+    Fetch.fetchWithInit(
+      "https://icanhazdadjoke.com/",
+      Fetch.RequestInit.make(~headers=Fetch.HeadersInit.make({"Accept": "application/json"}),())
+      )
+    |> then_(Fetch.Response.json)
+    |> then_(json => json |> Decode.joke |> (joke => Some(joke) |> resolve))
+    |> catch(_error => resolve(None));
+
+let component = ReasonReact.reducerComponent("RandomJoke");
+
+let createReducer = (fetch) => (action, _state) => switch action {
+  | FetchJoke => ReasonReact.UpdateWithSideEffects(Loading, 
+                 component => fetch() |> then_(result =>
+                        switch result {
+                          | Some(joke) => resolve(component.send(JokeFetched(joke)))
+                          | None => resolve(component.send(ErrorFetchingJoke))
+                        }
+                  )  |> ignore
+      )
+  | JokeFetched(joke) => ReasonReact.Update(Show(joke))
+  | ErrorFetchingJoke => ReasonReact.Update(Error("Error fetching a joke, try again ..."))
+  }
+
+let make = (~loadingMessage="loading ...", ~fetch = fetchJoke, _children) => {
+  ...component,
+  initialState: () => Loading,
+  reducer: createReducer(fetch),
+  didMount: self => self.send(FetchJoke),
+  render: self => switch self.state {
+    | Loading => <div> (ReasonReact.string(loadingMessage)) </div>
+    | Show(joke) => <div> (ReasonReact.string(joke)) </div>
+    | Error(error) => <div> (ReasonReact.string(error)) </div>
+  }
+};
+```
+
+### Important design note
+
+ Since this is a tutorial and we are generating a simple html we only have one component mixing all the application concerns. For a more complicated examples we would suggest different alternatives:
+1. Decouple behaviour and fetching from html generation in two diferent components using Presentational and Container Components
+2. If we want to reuse code across diferent components, use a render prop or HoC patterns to generalize fetching.
+3. If the application gets bigger and complex use another approach to handle a global state.
