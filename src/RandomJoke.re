@@ -32,7 +32,7 @@ let fetchJoke = () =>
 
 let component = ReasonReact.reducerComponent("RandomJoke");
 
-let createReducer = (fetch, action, _state) =>
+let createReducer = (fetch) => (action, _state) =>
   switch (action) {
   | FetchJoke =>
     ReasonReact.UpdateWithSideEffects(
